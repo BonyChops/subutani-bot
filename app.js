@@ -141,25 +141,44 @@ client.on('message', async(msg) => {
     const embed = embedAlert("SUBUTANI SEXY SERVER", "マイクラ鯖のステータスです", color , new Date(), url, fields );
     msg.channel.send({embed});
   }
-  if(msg.content === '!boot subutani'){
+  if(msg.content.indexOf("!subutani mgr") !== -1){
     if(msg.guild.roles.cache.find(role => role.name == cfg.roleName).members.get(msg.author.id) !== undefined){
-      if((await isServerOpen())||(await isServerBooting())){
-        msg.channel.send("```エラー: すでに起動しています```");
-      }else{
-        exec(cfg.bootCommand, (err, stdout, stderr) => {
-          if (err) {
-            console.log(`stderr: ${stderr}`)
-            return
-          }
-          console.log(`stdout: ${stdout}`)
+      if(msg.content == "!subutani mgr shutdown"){
+        if(isServerOpen()){
+          msg.channel.send("```鯖を終了しています...```");
+          await sendCommand("stop");
+        }else{
+          msg.channel.send("```エラー: まだオンラインではありません```");
         }
-      )
-        msg.channel.send("```起動を受け付けました。(起動するかどうかは保証されません😇)```");
+      }
+      if(msg.content == "!subutani mgr shutdown -f"){
+        if(isServerOpen()){
+          msg.channel.send("```強制シャットダウンを行います...```");
+          await execShellCommand("sudo screen -X -S mcserver quit");
+        }else{
+          msg.channel.send("```エラー: まだオンラインではありません```");
+        }
+      }
+      if(msg.content === '!subutani mgr boot'){
+        if((await isServerOpen())||(await isServerBooting())){
+            msg.channel.send("```エラー: すでに起動しています```");
+        }else{
+          exec(cfg.bootCommand, (err, stdout, stderr) => {
+            if (err) {
+              console.log(`stderr: ${stderr}`)
+              return
+            }
+            console.log(`stdout: ${stdout}`)
+          })
+          msg.channel.send("```起動を受け付けました。(起動するかどうかは保証されません😇)```");
+        }
       }
     }else{
       msg.channel.send("```エラー: 権限がありません```");
     }
-  }
+    }
+
+
 });
 
 client.login(cfg.token);
