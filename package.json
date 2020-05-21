@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/BonyChops/subutani-bot#readme",
   "dependencies": {
-    "discord.js": "^12.2.0"
+    "discord.js": "^12.2.0",
+    "rcon": "^1.0.3"
   }
 }

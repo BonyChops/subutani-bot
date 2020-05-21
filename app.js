@@ -4,6 +4,9 @@ const fs = require('fs');
 const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 const cfg = JSON.parse(fs.readFileSync(__dirname+'/config.json'));
 const exec = require('child_process').exec;
+const Rcon = require('node-rcon');
+let rconClient,
+    maybeBooting = false;
 const embedAlert = (name, description, color, time, userIcon, fields = []) =>{
   return {
       "title": name,
@@ -30,8 +33,13 @@ const isServerOpen = async() =>{
   return (result.indexOf(":"+cfg.mcPort) !== -1)
 }
 
+const isServerBooting = async() =>{
+  const result = await execShellCommand('sudo screen -ls | grep mcserver');
+  return (result.indexOf("mcserver") !== -1)
+}
+
 const setSUBUTANIPresence = (stat) =>{
-  if(stat){
+  if(stat == "ONLINE"){
     client.user.setPresence({
       status: "online",
       activity: {
@@ -40,27 +48,43 @@ const setSUBUTANIPresence = (stat) =>{
       }
     });
   }else{
-    client.user.setPresence({
-      status: "dnd",
-      activity: {
-          name: "鯖はオフラインです",
-          type: "LISTENING"
-      }
-    });
+    if(stat == "OFFLINE"){
+      client.user.setPresence({
+        status: "dnd",
+        activity: {
+            name: "鯖はオフラインです",
+            type: "LISTENING"
+        }
+      });
+    }else{
+      client.user.setPresence({
+        status: "idle",
+        activity: {
+            name: "鯖は起動中です",
+            type: "LISTENING"
+        }
+      });
+    }
   }
 }
 
 client.on('ready', async() => {
   console.log(`Logged in as ${client.user.tag}!`);
-  let prevStat = await false;
+  let prevStat = await "OFFLINE";
   setSUBUTANIPresence(prevStat);
   let stat;
   while(true){
-    stat = await isServerOpen();
+    stat = await isServerOpen() ? "ONLINE" : "OFFLINE";
+    if((stat == "OFFLINE")&&(await isServerBooting())) stat = await "BOOTING";
     if(stat != prevStat){
       console.log("Status changed");
       await setSUBUTANIPresence(stat);
       prevStat = await stat;
+      if(stat){
+        rconClient = await new Rcon(cfg.rcon.host, cfg.rcon.port, cfg.rcon.password);
+      }else{
+        rconClient = await null;
+      }
     }
     await sleep(3000);
   }
@@ -75,8 +99,13 @@ client.on('message', async(msg) => {
       status = await "OPEN"
       color = 65280
     }else{
-      status = await "CLOSE"
-      color = 16711680
+      if(await isServerBooting()){
+        status = await "BOOTING"
+        color = 16098851
+      }else{
+        status = await "CLOSE"
+        color = 16711680
+      }
     }
     const url = "https://i.ytimg.com/vi/nS61U_K1YNU/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLD_6QvbKGh-W069AZAPxvPd8dI9tQ"
     const fields =[
@@ -98,7 +127,7 @@ client.on('message', async(msg) => {
   }
   if(msg.content === '!boot subutani'){
     if(msg.guild.roles.cache.find(role => role.name == cfg.roleName).members.get(msg.author.id) !== undefined){
-      if(await isServerOpen()){
+      if((await isServerOpen())||(await isServerBooting())){
         msg.channel.send("```エラー: すでに起動しています```");
       }else{
         exec(cfg.bootCommand, (err, stdout, stderr) => {
