@@ -144,7 +144,7 @@ client.on('message', async(msg) => {
   if(msg.content.indexOf("!subutani mgr") !== -1){
     if(msg.guild.roles.cache.find(role => role.name == cfg.roleName).members.get(msg.author.id) !== undefined){
       if(msg.content == "!subutani mgr shutdown"){
-        if(isServerOpen()){
+        if(await isServerOpen()){
           msg.channel.send("```鯖を終了しています...```");
           rconClient.send("stop");
         }else{
