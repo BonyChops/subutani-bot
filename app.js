@@ -97,11 +97,12 @@ client.on('message', async(msg) => {
       }
     ]
     const embed = embedAlert("SUBUTANI SEXY SERVER", "マイクラ鯖のステータスです", color , new Date(), url, fields );
+    msg.channel.send({embed});
   }
   if(msg.content === '!boot subutani'){
-    msg.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.author.id)} \`\`\``)
-    msg.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache)} \`\`\``)
-    msg.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache.find(role => role.name == cfg.roleName).get(msg.author.id))} \`\`\``)
+    msg.channel.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.author.id)} \`\`\``)
+    msg.channel.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache)} \`\`\``)
+    msg.channel.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache.find(role => role.name == cfg.roleName).get(msg.author.id))} \`\`\``)
 
   }
 });
