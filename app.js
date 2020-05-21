@@ -4,6 +4,19 @@ const fs = require('fs');
 const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 const cfg = JSON.parse(fs.readFileSync(__dirname+'/config.json'));
 
+const embedAlert = (name, description, color, time, userIcon, fields = []) =>{
+  return {
+      "title": name,
+      "description": description,
+      "color": color,
+      "timestamp": time,
+      "thumbnail": {
+        "url": userIcon
+      },
+      "fields": fields
+    };
+};
+
 function execShellCommand(cmd) {
   const exec = require('child_process').exec;
   return new Promise((resolve, reject) => {
@@ -27,7 +40,7 @@ const setSUBUTANIPresence = (stat) =>{
       status: "online",
       activity: {
           name: "鯖はオンラインです",
-          type: "LISTENING" //PLAYING: WATCHING: LISTENING: STREAMING:
+          type: "STREAMING" //PLAYING: WATCHING: LISTENING: STREAMING:
       }
     });
   }else{
@@ -59,11 +72,36 @@ client.on('ready', async() => {
 
 client.on('message', async(msg) => {
   if (msg.content === '!subutani') {
+    let status;
+    let color;
+    const IP = await execShellCommand('curl inet-ip.info');
     if(await isServerOpen()){
-      msg.reply("オンラインですね");
+      status = await "OPEN"
+      color = 65280
     }else{
-      msg.reply("オフラインですね");
+      status = await "CLOSE"
     }
+    const url = "https://i.ytimg.com/vi/nS61U_K1YNU/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLD_6QvbKGh-W069AZAPxvPd8dI9tQ"
+    const fields =[
+      {
+        "name": "ステータス",
+        "value": status
+      },
+      {
+        "name": "鯖IP",
+        "value": `\`${IP}\``
+      },
+      {
+        "name": "遊んでるメンバー",
+        "value": "```作る予定(めんどい)```"
+      }
+    ]
+    const embed = embedAlert("SUBUTANI SEXY SERVER", "マイクラ鯖のステータスです", color , new Date(), url, fields );
+  }
+  if(msg.content === '!boot subutani'){
+    msg.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.author.id)} \`\`\``)
+    msg.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache)} \`\`\``)
+    msg.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache.find(role => role.name == cfg.roleName).get(msg.author.id))} \`\`\``)
 
   }
 });
