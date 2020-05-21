@@ -5,8 +5,7 @@ const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 const cfg = JSON.parse(fs.readFileSync(__dirname+'/config.json'));
 const exec = require('child_process').exec;
 const Rcon = require('rcon');
-let rconClient,
-    maybeBooting = false;
+const rconClient = await new Rcon(cfg.rcon.host, cfg.rcon.port, cfg.rcon.password);
 const embedAlert = (name, description, color, time, userIcon, fields = []) =>{
   return {
       "title": name,
@@ -83,7 +82,6 @@ client.on('ready', async() => {
       await setSUBUTANIPresence(stat);
       prevStat = await stat;
       if(stat == "ONLINE"){
-        rconClient = await new Rcon(cfg.rcon.host, cfg.rcon.port, cfg.rcon.password);
         rconClient.connect();
         rconClient.on('auth', function() {
           console.log("Authed!");
