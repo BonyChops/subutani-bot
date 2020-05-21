@@ -82,8 +82,14 @@ client.on('ready', async() => {
       prevStat = await stat;
       if(stat){
         rconClient = await new Rcon(cfg.rcon.host, cfg.rcon.port, cfg.rcon.password);
-      }else{
-        rconClient = await null;
+        rconClient.on('auth', function() {
+          console.log("Authed!");
+        }).on('response', function(str) {
+          console.log("Got response: " + str);
+        }).on('end', function() {
+          console.log("Socket closed!");
+          process.exit();
+        });
       }
     }
     await sleep(3000);
