@@ -98,7 +98,7 @@ client.on('message', async(msg) => {
     if(await isServerOpen()){
       status = await "OPEN"
       color = 65280
-      await rconClient.send("list").on("response", (str) => {
+      await rconClient.send("list").on("response", async (str) => {
         await msg.channel.send(str);
       })
     }else{
