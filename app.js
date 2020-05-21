@@ -17,7 +17,7 @@ function execShellCommand(cmd) {
 }
 
 const isServerOpen = async() =>{
-  const result = await execShellCommand('sudo netstat -ltup4 -n');
+  const result = await execShellCommand('netstat -anltp|grep :'+cfg.mcPort);
   return (result.indexOf(":"+cfg.mcPort) !== -1)
 }
 
