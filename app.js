@@ -84,7 +84,7 @@ client.on('ready', async() => {
       prevStat = await stat;
       if(stat == "ONLINE"){
         rconClient = await new Rcon(cfg.rcon.host, cfg.rcon.port, cfg.rcon.password);
-        conn.connect();
+        rconClient.connect();
         rconClient.on('auth', function() {
           console.log("Authed!");
         }).on('response', function(str) {
