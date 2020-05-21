@@ -146,7 +146,7 @@ client.on('message', async(msg) => {
       if(msg.content == "!subutani mgr shutdown"){
         if(isServerOpen()){
           msg.channel.send("```鯖を終了しています...```");
-          await sendCommand("stop");
+          rconClient.send("stop");
         }else{
           msg.channel.send("```エラー: まだオンラインではありません```");
         }
