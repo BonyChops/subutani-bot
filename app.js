@@ -5,7 +5,7 @@ const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 const cfg = JSON.parse(fs.readFileSync(__dirname+'/config.json'));
 const exec = require('child_process').exec;
 const Rcon = require('rcon');
-const rconClient = await new Rcon(cfg.rcon.host, cfg.rcon.port, cfg.rcon.password);
+const rconClient = new Rcon(cfg.rcon.host, cfg.rcon.port, cfg.rcon.password);
 const embedAlert = (name, description, color, time, userIcon, fields = []) =>{
   return {
       "title": name,
@@ -108,7 +108,7 @@ client.on('message', async(msg) => {
       color = 65280
       await rconClient.send("list");
       member = await new Promise((resolve, reject) => {
-        rconClient.on("server", (str) => {
+        rconClient.on("response", (str) => {
           resolve(str);
         })
       });
