@@ -3,7 +3,7 @@ const client = new Discord.Client();
 const fs = require('fs');
 const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 const cfg = JSON.parse(fs.readFileSync(__dirname+'/config.json'));
-
+const exec = require('child_process').exec;
 const embedAlert = (name, description, color, time, userIcon, fields = []) =>{
   return {
       "title": name,
@@ -18,7 +18,6 @@ const embedAlert = (name, description, color, time, userIcon, fields = []) =>{
 };
 
 function execShellCommand(cmd) {
-  const exec = require('child_process').exec;
   return new Promise((resolve, reject) => {
    exec(cmd, (error, stdout, stderr) => {
     if (error) {
@@ -100,12 +99,16 @@ client.on('message', async(msg) => {
     msg.channel.send({embed});
   }
   if(msg.content === '!boot subutani'){
-    msg.channel.send("`DEBUG INFO IN ON CONSOLE NOW!`")
-    console.log(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.author.id)} \`\`\``)
-    console.log(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache)} \`\`\``)
-    console.log(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache.find(role => role.name == cfg.roleName))} \`\`\``)
-    console.log(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache.find(role => role.name == cfg.roleName).members.get(msg.author.id))} \`\`\``)
-
+    if(msg.guild.roles.cache.find(role => role.name == cfg.roleName).members.get(msg.author.id) !== undefined){
+      if(await isServerOpen()){
+        msg.channel.send("```エラー: すでに起動しています```");
+      }else{
+        exec(cfg.bootCommand);
+        msg.channel.send("```起動を受け付けました。(起動するかどうかは保証されません😇)```");
+      }
+    }else{
+      msg.channel.send("```エラー: 権限がありません```");
+    }
   }
 });
 
