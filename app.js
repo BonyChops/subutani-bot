@@ -101,7 +101,7 @@ client.on('message', async(msg) => {
       color = 65280
       await rconClient.send("list");
       member = new Promise((resolve, reject) => {
-        rconClient.on("response", (str) => {
+        rconClient.on("server", (str) => {
           resolve(str);
         })
       });
