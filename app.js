@@ -79,6 +79,7 @@ client.on('message', async(msg) => {
       color = 65280
     }else{
       status = await "CLOSE"
+      color = 16711680
     }
     const url = "https://i.ytimg.com/vi/nS61U_K1YNU/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLD_6QvbKGh-W069AZAPxvPd8dI9tQ"
     const fields =[
