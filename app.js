@@ -6,6 +6,13 @@ const cfg = JSON.parse(fs.readFileSync(__dirname+'/config.json'));
 const exec = require('child_process').exec;
 const Rcon = require('rcon');
 const rconClient = new Rcon(cfg.rcon.host, cfg.rcon.port, cfg.rcon.password);
+const sendCommand =(cmd) => {
+  rconClient.send(cmd);
+  return new Promise((resolve, reject) => {
+    rconClient.on("response", (str) => {
+      resolve(str);
+    })
+});}
 const embedAlert = (name, description, color, time, userIcon, fields = []) =>{
   return {
       "title": name,
@@ -106,13 +113,7 @@ client.on('message', async(msg) => {
     if(await isServerOpen()){
       status = await "OPEN"
       color = 65280
-      await rconClient.send("list");
-      member = await new Promise((resolve, reject) => {
-        rconClient.on("response", (str) => {
-          resolve(str);
-        })
-      });
-      msg.channel.send(member);
+      member = await sendCommand("list")
     }else{
       if(await isServerBooting()){
         status = await "BOOTING"
@@ -134,7 +135,7 @@ client.on('message', async(msg) => {
       },
       {
         "name": "遊んでるメンバー",
-        "value": "```作る予定(めんどい)```"
+        "value": `\`\`\`${member}\`\`\``
       }
     ]
     const embed = embedAlert("SUBUTANI SEXY SERVER", "マイクラ鯖のステータスです", color , new Date(), url, fields );
