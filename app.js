@@ -94,13 +94,17 @@ client.on('message', async(msg) => {
   if (msg.content === '!subutani') {
     let status;
     let color;
+    let member = "鯖はまだオフラインです";
     const IP = await execShellCommand('curl inet-ip.info');
     if(await isServerOpen()){
       status = await "OPEN"
       color = 65280
-      await rconClient.send("list").on("response", async (str) => {
-        await msg.channel.send(str);
-      })
+      member = new Promise((resolve, reject) => {
+        rconClient.send("list").on("response", (str) => {
+          resolve(str);
+        })
+      });
+      msg.channel.send(str);
     }else{
       if(await isServerBooting()){
         status = await "BOOTING"
