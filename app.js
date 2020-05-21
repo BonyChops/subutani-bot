@@ -4,7 +4,7 @@ const fs = require('fs');
 const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 const cfg = JSON.parse(fs.readFileSync(__dirname+'/config.json'));
 const exec = require('child_process').exec;
-const Rcon = require('node-rcon');
+const Rcon = require('rcon');
 let rconClient,
     maybeBooting = false;
 const embedAlert = (name, description, color, time, userIcon, fields = []) =>{
