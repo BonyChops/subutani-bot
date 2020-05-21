@@ -110,7 +110,7 @@ client.on('ready', async() => {
       prevStat = await stat;
       if(stat == "ONLINE"){
         let connected = false;
-        while((!notConnected)&&(await isServerOpen())){
+        while((!connected)&&(await isServerOpen())){
           try{
             await rconClient.connect();
             connected = true;
