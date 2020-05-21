@@ -13,6 +13,7 @@ const sendCommand =(cmd) => {
       resolve(str);
     })
 });}
+
 const embedAlert = (name, description, color, time, userIcon, fields = []) =>{
   return {
       "title": name,
@@ -42,6 +43,15 @@ const isServerOpen = async() =>{
 const isServerBooting = async() =>{
   const result = await execShellCommand('sudo screen -ls | grep mcserver');
   return (result.indexOf("mcserver") !== -1)
+}
+
+const waitTilEnd = async() => {
+  await rconClient.send("stop");
+  for (let i = 0; i < 5; i++) {
+    if (isServerOpen()) return true;
+    sleep(3000);
+  }
+  return false;
 }
 
 const setSUBUTANIPresence = (stat) =>{
@@ -96,7 +106,6 @@ client.on('ready', async() => {
           console.log("Got response: " + str);
         }).on('end', function() {
           console.log("Socket closed!");
-          process.exit();
         });
       }
     }
@@ -143,10 +152,20 @@ client.on('message', async(msg) => {
   }
   if(msg.content.indexOf("!subutani mgr") !== -1){
     if(msg.guild.roles.cache.find(role => role.name == cfg.roleName).members.get(msg.author.id) !== undefined){
+      if(msg.content == "!subutani mgr reboot"){
+        if(await isServerOpen()){
+          msg.channel.send("```再起動しています...```");
+          if(await !waitTilEnd()){
+            msg.channel.send("```エラー: 鯖の終了に失敗しました```");
+          }
+        }else{
+          msg.channel.send("```エラー: まだオンラインではありません```");
+        }
+      }
       if(msg.content == "!subutani mgr shutdown"){
         if(await isServerOpen()){
           msg.channel.send("```鯖を終了しています...```");
-          rconClient.send("stop");
+          msg.channel.send(await waitTilEnd() ? "```終了しました```" : "```失敗しました```");
         }else{
           msg.channel.send("```エラー: まだオンラインではありません```");
         }
