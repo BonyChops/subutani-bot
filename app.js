@@ -109,7 +109,16 @@ client.on('ready', async() => {
       await setSUBUTANIPresence(stat);
       prevStat = await stat;
       if(stat == "ONLINE"){
-        rconClient.connect();
+        let connected = false;
+        while((!notConnected)&&(await isServerOpen())){
+          try{
+            await rconClient.connect();
+            connected = true;
+          }catch(error){
+            console.log("failed to connect to server...");
+          }
+          sleep(3000);
+        }
         rconClient.on('auth', function() {
           console.log("Authed!");
         }).on('response', function(str) {
