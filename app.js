@@ -102,6 +102,7 @@ client.on('message', async(msg) => {
   if(msg.content === '!boot subutani'){
     msg.channel.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.author.id)} \`\`\``)
     msg.channel.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache)} \`\`\``)
+    msg.channel.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache.find(role => role.name == cfg.roleName))} \`\`\``)
     msg.channel.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache.find(role => role.name == cfg.roleName).get(msg.author.id))} \`\`\``)
 
   }
