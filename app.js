@@ -35,6 +35,16 @@ function execShellCommand(cmd) {
   });
 }
 
+const execNormal = (cmd) => {
+  exec(cmd, (err, stdout, stderr) => {
+    if (err) {
+      console.log(`stderr: ${stderr}`)
+      return
+    }
+    console.log(`stdout: ${stdout}`)
+  })
+}
+
 const isServerOpen = async() =>{
   const result = await execShellCommand('netstat -anltp|grep :'+cfg.mcPort);
   return (result.indexOf(":"+cfg.mcPort) !== -1)
@@ -157,6 +167,9 @@ client.on('message', async(msg) => {
           msg.channel.send("```再起動しています...```");
           if(await !waitTilEnd()){
             msg.channel.send("```エラー: 鯖の終了に失敗しました```");
+          }else{
+            execNormal(cfg.bootCommand);
+            msg.channel.send("```起動を受け付けました。(起動するかどうかは保証されません😇)```");
           }
         }else{
           msg.channel.send("```エラー: まだオンラインではありません```");
@@ -182,13 +195,7 @@ client.on('message', async(msg) => {
         if((await isServerOpen())||(await isServerBooting())){
             msg.channel.send("```エラー: すでに起動しています```");
         }else{
-          exec(cfg.bootCommand, (err, stdout, stderr) => {
-            if (err) {
-              console.log(`stderr: ${stderr}`)
-              return
-            }
-            console.log(`stdout: ${stdout}`)
-          })
+          execNormal(cfg.bootCommand);
           msg.channel.send("```起動を受け付けました。(起動するかどうかは保証されません😇)```");
         }
       }
