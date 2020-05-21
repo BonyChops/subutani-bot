@@ -105,7 +105,7 @@ client.on('message', async(msg) => {
           resolve(str);
         })
       });
-      msg.channel.send(str);
+      msg.channel.send(member);
     }else{
       if(await isServerBooting()){
         status = await "BOOTING"
