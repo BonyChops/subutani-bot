@@ -104,8 +104,9 @@ client.on('message', async(msg) => {
       if(await isServerOpen()){
         msg.channel.send("```エラー: すでに起動しています```");
       }else{
-        exec(cfg.bootCommand);
-        msg.channel.send("```起動を受け付けました。(起動するかどうかは保証されません😇)```");
+        await msg.channel.send("```起動を受け付けました。(起動するかどうかは保証されません😇)```");
+        const debug = await execShellCommand(cfg.bootCommand);
+        console.log(debug);
       }
     }else{
       msg.channel.send("```エラー: 権限がありません```");
