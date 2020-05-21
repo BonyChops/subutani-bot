@@ -80,7 +80,7 @@ client.on('ready', async() => {
       console.log("Status changed");
       await setSUBUTANIPresence(stat);
       prevStat = await stat;
-      if(stat){
+      if(stat == "ONLINE"){
         rconClient = await new Rcon(cfg.rcon.host, cfg.rcon.port, cfg.rcon.password);
         rconClient.on('auth', function() {
           console.log("Authed!");
