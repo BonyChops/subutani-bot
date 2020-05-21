@@ -100,10 +100,11 @@ client.on('message', async(msg) => {
     msg.channel.send({embed});
   }
   if(msg.content === '!boot subutani'){
-    msg.channel.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.author.id)} \`\`\``)
-    msg.channel.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache)} \`\`\``)
-    msg.channel.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache.find(role => role.name == cfg.roleName))} \`\`\``)
-    msg.channel.send(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache.find(role => role.name == cfg.roleName).get(msg.author.id))} \`\`\``)
+    msg.channel.send("`DEBUG INFO IN ON CONSOLE NOW!`")
+    console.log(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.author.id)} \`\`\``)
+    console.log(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache)} \`\`\``)
+    console.log(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache.find(role => role.name == cfg.roleName))} \`\`\``)
+    console.log(`\`\`\`DEBUG INFO\n${JSON.stringify(msg.guild.roles.cache.find(role => role.name == cfg.roleName).members.get(msg.author.id))} \`\`\``)
 
   }
 });
