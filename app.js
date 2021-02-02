@@ -112,6 +112,7 @@ client.on('ready', async () => {
       if (stat == "ONLINE") {
         let connected = false;
         while ((!connected) && (await isServerOpen())) {
+          console.log("Logging in...");
           try {
             await rconClient.connect();
             connected = true;
