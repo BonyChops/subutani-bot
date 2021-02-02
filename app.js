@@ -59,8 +59,8 @@ const isServerBooting = async () => {
 const waitTilEnd = async () => {
   await rconClient.send("stop");
   for (let i = 0; i < 5; i++) {
-    if (isServerOpen()) return true;
-    sleep(3000);
+    if (!isServerOpen()) return true;
+    await sleep(3000);
   }
   return false;
 }
@@ -113,9 +113,7 @@ client.on('ready', async () => {
         let connected = false;
         while ((!connected) && (await isServerOpen())) {
           console.log("Logging in...");
-          rconClient.connect().catch(e => {
-            console.log("Error");
-          })
+          rconClient.connect();
 
           sleep(3000);
         }
