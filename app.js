@@ -113,16 +113,15 @@ client.on('ready', async () => {
         let connected = false;
         while ((!connected) && (await isServerOpen())) {
           console.log("Logging in...");
-          try {
-            await rconClient.connect();
-            connected = true;
-          } catch (error) {
-            console.log("failed to connect to server...");
-          }
+          rconClient.connect().catch(e => {
+            console.log("Error");
+          })
+
           sleep(3000);
         }
         rconClient.on('auth', function () {
           console.log("Authed!");
+          connected = true;
         }).on('response', function (str) {
           console.log("Got response: " + str);
         }).on('end', function () {
