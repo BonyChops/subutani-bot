@@ -2,36 +2,37 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const fs = require('fs');
 const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
-const cfg = JSON.parse(fs.readFileSync(__dirname+'/config.json'));
+const cfg = JSON.parse(fs.readFileSync(__dirname + '/config.json'));
 const exec = require('child_process').exec;
 const Rcon = require('rcon');
 const rconClient = new Rcon(cfg.rcon.host, cfg.rcon.port, cfg.rcon.password);
-const sendCommand =(cmd) => {
+const sendCommand = (cmd) => {
   rconClient.send(cmd);
   return new Promise((resolve, reject) => {
     rconClient.on("response", (str) => {
       resolve(str);
     })
-});}
+  });
+}
 
-const embedAlert = (name, description, color, time, userIcon, fields = []) =>{
+const embedAlert = (name, description, color, time, userIcon, fields = []) => {
   return {
-      "title": name,
-      "description": description,
-      "color": color,
-      "timestamp": time,
-      "thumbnail": {
-        "url": userIcon
-      },
-      "fields": fields
-    };
+    "title": name,
+    "description": description,
+    "color": color,
+    "timestamp": time,
+    "thumbnail": {
+      "url": userIcon
+    },
+    "fields": fields
+  };
 };
 
 function execShellCommand(cmd) {
   return new Promise((resolve, reject) => {
-   exec(cmd, (error, stdout, stderr) => {
-    resolve(stdout? stdout : stderr);
-   });
+    exec(cmd, (error, stdout, stderr) => {
+      resolve(stdout ? stdout : stderr);
+    });
   });
 }
 
@@ -45,17 +46,17 @@ const execNormal = (cmd) => {
   })
 }
 
-const isServerOpen = async() =>{
-  const result = await execShellCommand('netstat -anltp|grep :'+cfg.mcPort);
-  return (result.indexOf(":"+cfg.mcPort) !== -1)
+const isServerOpen = async () => {
+  const result = await execShellCommand('netstat -anltp|grep :' + cfg.mcPort);
+  return (result.indexOf(":" + cfg.mcPort) !== -1)
 }
 
-const isServerBooting = async() =>{
+const isServerBooting = async () => {
   const result = await execShellCommand('sudo screen -ls | grep mcserver');
   return (result.indexOf("mcserver") !== -1)
 }
 
-const waitTilEnd = async() => {
+const waitTilEnd = async () => {
   await rconClient.send("stop");
   for (let i = 0; i < 5; i++) {
     if (isServerOpen()) return true;
@@ -64,30 +65,30 @@ const waitTilEnd = async() => {
   return false;
 }
 
-const setSUBUTANIPresence = (stat) =>{
-  if(stat == "ONLINE"){
+const setSUBUTANIPresence = (stat) => {
+  if (stat == "ONLINE") {
     client.user.setPresence({
       status: "online",
       activity: {
-          name: "鯖はオンラインです",
-          type: "STREAMING" //PLAYING: WATCHING: LISTENING: STREAMING:
+        name: "鯖はオンラインです",
+        type: "STREAMING" //PLAYING: WATCHING: LISTENING: STREAMING:
       }
     });
-  }else{
-    if(stat == "OFFLINE"){
+  } else {
+    if (stat == "OFFLINE") {
       client.user.setPresence({
         status: "dnd",
         activity: {
-            name: "鯖はオフラインです",
-            type: "LISTENING"
+          name: "鯖はオフラインです",
+          type: "LISTENING"
         }
       });
-    }else{
+    } else {
       client.user.setPresence({
         status: "idle",
         activity: {
-            name: "鯖は起動中です",
-            type: "LISTENING"
+          name: "鯖は起動中です",
+          type: "LISTENING"
         }
       });
     }
@@ -96,34 +97,34 @@ const setSUBUTANIPresence = (stat) =>{
 
 
 
-client.on('ready', async() => {
+client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
   let prevStat = await "OFFLINE";
   setSUBUTANIPresence(prevStat);
   let stat;
-  while(true){
+  while (true) {
     stat = await isServerOpen() ? "ONLINE" : "OFFLINE";
-    if((stat == "OFFLINE")&&(await isServerBooting())) stat = await "BOOTING";
-    if(stat != prevStat){
+    if ((stat == "OFFLINE") && (await isServerBooting())) stat = await "BOOTING";
+    if (stat != prevStat) {
       console.log("Status changed");
       await setSUBUTANIPresence(stat);
       prevStat = await stat;
-      if(stat == "ONLINE"){
+      if (stat == "ONLINE") {
         let connected = false;
-        while((!connected)&&(await isServerOpen())){
-          try{
+        while ((!connected) && (await isServerOpen())) {
+          try {
             await rconClient.connect();
             connected = true;
-          }catch(error){
+          } catch (error) {
             console.log("failed to connect to server...");
           }
           sleep(3000);
         }
-        rconClient.on('auth', function() {
+        rconClient.on('auth', function () {
           console.log("Authed!");
-        }).on('response', function(str) {
+        }).on('response', function (str) {
           console.log("Got response: " + str);
-        }).on('end', function() {
+        }).on('end', function () {
           console.log("Socket closed!");
         });
       }
@@ -132,27 +133,27 @@ client.on('ready', async() => {
   }
 });
 
-client.on('message', async(msg) => {
+client.on('message', async (msg) => {
   if (msg.content === '!subutani') {
     let status;
     let color;
     let member = "鯖はまだオフラインです";
     const IP = await execShellCommand('curl inet-ip.info');
-    if(await isServerOpen()){
+    if (await isServerOpen()) {
       status = await "OPEN"
       color = 65280
       member = await sendCommand("list")
-    }else{
-      if(await isServerBooting()){
+    } else {
+      if (await isServerBooting()) {
         status = await "BOOTING"
         color = 16098851
-      }else{
+      } else {
         status = await "CLOSE"
         color = 16711680
       }
     }
     const url = "https://i.ytimg.com/vi/nS61U_K1YNU/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLD_6QvbKGh-W069AZAPxvPd8dI9tQ"
-    const fields =[
+    const fields = [
       {
         "name": "ステータス",
         "value": status
@@ -166,52 +167,52 @@ client.on('message', async(msg) => {
         "value": `\`\`\`${member}\`\`\``
       }
     ]
-    const embed = embedAlert("SUBUTANI SEXY SERVER", "マイクラ鯖のステータスです", color , new Date(), url, fields );
-    msg.channel.send({embed});
+    const embed = embedAlert("SUBUTANI SEXY SERVER", "マイクラ鯖のステータスです", color, new Date(), url, fields);
+    msg.channel.send({ embed });
   }
-  if(msg.content.indexOf("!subutani mgr") !== -1){
-    if(msg.guild.roles.cache.find(role => role.name == cfg.roleName).members.get(msg.author.id) !== undefined){
-      if(msg.content == "!subutani mgr reboot"){
-        if(await isServerOpen()){
+  if (msg.content.indexOf("!subutani mgr") !== -1) {
+    if (msg.guild.roles.cache.find(role => role.name == cfg.roleName).members.get(msg.author.id) !== undefined) {
+      if (msg.content == "!subutani mgr reboot") {
+        if (await isServerOpen()) {
           msg.channel.send("```再起動しています...```");
-          if(await !waitTilEnd()){
+          if (await !waitTilEnd()) {
             msg.channel.send("```エラー: 鯖の終了に失敗しました```");
-          }else{
+          } else {
             execNormal(cfg.bootCommand);
             msg.channel.send("```起動を受け付けました。(起動するかどうかは保証されません😇)```");
           }
-        }else{
+        } else {
           msg.channel.send("```エラー: まだオンラインではありません```");
         }
       }
-      if(msg.content == "!subutani mgr shutdown"){
-        if(await isServerOpen()){
+      if (msg.content == "!subutani mgr shutdown") {
+        if (await isServerOpen()) {
           msg.channel.send("```鯖を終了しています...```");
           msg.channel.send(await waitTilEnd() ? "```終了しました```" : "```失敗しました```");
-        }else{
+        } else {
           msg.channel.send("```エラー: まだオンラインではありません```");
         }
       }
-      if(msg.content == "!subutani mgr shutdown -f"){
-        if(isServerOpen()){
+      if (msg.content == "!subutani mgr shutdown -f") {
+        if (isServerOpen()) {
           msg.channel.send("```強制シャットダウンを行います...```");
           await execShellCommand("sudo screen -X -S mcserver quit");
-        }else{
+        } else {
           msg.channel.send("```エラー: まだオンラインではありません```");
         }
       }
-      if(msg.content === '!subutani mgr boot'){
-        if((await isServerOpen())||(await isServerBooting())){
-            msg.channel.send("```エラー: すでに起動しています```");
-        }else{
+      if (msg.content === '!subutani mgr boot') {
+        if ((await isServerOpen()) || (await isServerBooting())) {
+          msg.channel.send("```エラー: すでに起動しています```");
+        } else {
           execNormal(cfg.bootCommand);
           msg.channel.send("```起動を受け付けました。(起動するかどうかは保証されません😇)```");
         }
       }
-    }else{
+    } else {
       msg.channel.send("```エラー: 権限がありません```");
     }
-    }
+  }
 
 
 });
