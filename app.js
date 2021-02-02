@@ -114,7 +114,7 @@ client.on('ready', async () => {
         while ((!connected) && (await isServerOpen())) {
           console.log("Logging in...");
           rconClient.connect();
-
+          connected = true;
           sleep(3000);
         }
         rconClient.on('auth', function () {
