@@ -59,7 +59,7 @@ const isServerBooting = async () => {
 const waitTilEnd = async () => {
   await rconClient.send("stop");
   for (let i = 0; i < 5; i++) {
-    if (!isServerOpen()) return true;
+    if (!isServerBooting()) return true;
     await sleep(3000);
   }
   return false;
