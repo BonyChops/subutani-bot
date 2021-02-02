@@ -47,7 +47,7 @@ const execNormal = (cmd) => {
 }
 
 const isServerOpen = async () => {
-  const result = await execShellCommand('netstat -anltp|grep :' + cfg.mcPort);
+  const result = await execShellCommand('netstat -anltp|grep :' + cfg.rcon.port + ".*LISTEN");
   return (result.indexOf(":" + cfg.mcPort) !== -1)
 }
 
