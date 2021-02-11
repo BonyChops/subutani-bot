@@ -21,7 +21,7 @@ const returnError = (res, error = false, errorDetail) => {
     console.log(error);
     res.status(400);
     res.json(errorDetail);
-    return;
+    next();
 }
 
 app.listen(port, () => {
@@ -38,10 +38,22 @@ app.get("/serverStatus", function (req, res, next) {
         status: "connected",
         serverInfo
     });
+    console.log("Server connected");
 });
 
 app.post("/discordOAuth", async function (req, res, next) {
+    console.log("discordOAuth");
     const code = req.body.code;
+    if (code === undefined || code === "") {
+        returnError(res, error, {
+            "status": "error",
+            "type": "code_not_provided",
+            "mes": error.toString()
+        });
+        next();
+        return;
+    }
+    console.log(code);
     const access_token = await new Promise((resolve, reject) => {
         oauth.tokenRequest({
             clientId: discordOAuth.clientId,
@@ -60,7 +72,7 @@ app.post("/discordOAuth", async function (req, res, next) {
             "type": "not_authorized",
             "mes": error.toString()
         });
-        return;
+        next();
     })
 
     const userInfo = await new Promise((resolve, reject) => {
@@ -71,7 +83,7 @@ app.post("/discordOAuth", async function (req, res, next) {
             "type": "no_permission_identify",
             "mes": error.toString()
         })
-        return;
+        next();
     });
     console.log(userInfo);
 
@@ -83,7 +95,7 @@ app.post("/discordOAuth", async function (req, res, next) {
             "type": "no_permission_guild",
             "mes": error.toString()
         })
-        return;
+        next();
     });
     if (guilds.some(guild => discordOAuth.approved_server.includes(guild.id))) {
         const access_token = v4();
@@ -94,7 +106,8 @@ app.post("/discordOAuth", async function (req, res, next) {
         }
         bufAccessTokens.push(data);
         res.json(data);
-    }else{
+        console.log(data);
+    } else {
         returnError(res, false, {
             "status": "error",
             "type": "no_approved_guild",
