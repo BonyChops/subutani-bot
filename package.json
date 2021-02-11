@@ -17,7 +17,12 @@
   },
   "homepage": "https://github.com/BonyChops/subutani-bot#readme",
   "dependencies": {
+    "access-token": "^0.2.2",
+    "cors": "^2.8.5",
+    "discord-oauth2": "^2.6.0",
     "discord.js": "^12.2.0",
-    "rcon": "^1.0.3"
+    "express": "^4.17.1",
+    "rcon": "^1.0.3",
+    "uuid": "^8.3.2"
   }
 }

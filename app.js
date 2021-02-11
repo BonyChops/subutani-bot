@@ -6,6 +6,8 @@ const cfg = JSON.parse(fs.readFileSync(__dirname + '/config.json'));
 const exec = require('child_process').exec;
 const Rcon = require('rcon');
 const rconClient = new Rcon(cfg.rcon.host, cfg.rcon.port, cfg.rcon.password);
+require('./src/authServer');
+
 const sendCommand = (cmd) => {
   rconClient.send(cmd);
   return new Promise((resolve, reject) => {
@@ -215,4 +217,4 @@ client.on('message', async (msg) => {
 
 });
 
-client.login(cfg.token);
+//client.login(cfg.token);
