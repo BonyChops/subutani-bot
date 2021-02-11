@@ -42,8 +42,7 @@ app.get("/serverStatus", function (req, res, next) {
 
 app.post("/discordOAuth", async function (req, res, next) {
     const code = req.body.code;
-    let access_token;
-    access_token = await new Promise((resolve, reject) => {
+    const access_token = await new Promise((resolve, reject) => {
         oauth.tokenRequest({
             clientId: discordOAuth.clientId,
             clientSecret: discordOAuth.clientSecret,
@@ -63,7 +62,6 @@ app.post("/discordOAuth", async function (req, res, next) {
         });
         return;
     })
-    console.log(access_token);
 
     const userInfo = await new Promise((resolve, reject) => {
         oauth.getUser(access_token).then(data => resolve(data)).catch(e => reject(e));
@@ -87,8 +85,7 @@ app.post("/discordOAuth", async function (req, res, next) {
         })
         return;
     });
-    console.log(guilds);
-    if (guilds.some(guild => discordOAuth.approved_server.includes(guild))) {
+    if (guilds.some(guild => discordOAuth.approved_server.includes(guild.id))) {
         const access_token = v4();
         const data = {
             status: "ok",
