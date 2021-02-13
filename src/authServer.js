@@ -14,7 +14,32 @@ const { resolve } = require('path');
 const { v4 } = require('uuid');
 app.use(bodyParser.json());
 
+const sleep = (ms) => { return new Promise((resolve => { setTimeout(() => { resolve(); }, ms); })) }
+
 let bufAccessTokens = [];
+
+class db{
+    data = [];
+    dataPath;
+    constructor(dataPath){
+        this.dataPath = dataPath;
+        if(fs.existsSync(dataPath)){
+            this.loadData();
+        }else{
+
+        }
+    };
+
+    loadData = () => {
+        this.data = JSON.parse(fs.readFileSync(this.dataPath));
+    }
+
+    writeData = (data) => {
+
+    }
+
+
+}
 
 const returnError = (res, error = false, errorDetail) => {
     console.log("error");
@@ -26,20 +51,38 @@ const returnError = (res, error = false, errorDetail) => {
 
 app.listen(port, () => {
     console.log(`listening on ${port}`);
-    console.log(v4());
+    console.log("UUID test:" + v4());
 });
 
 app.use(cors());
 app.options('*', cors());  // enable pre-flight
 
-app.get("/serverStatus", function (req, res, next) {
-    res.set('Access-Control-Allow-Origin', '*');
+app.get("/serverStatus", async(req, res, next) => {
     res.json({
         status: "connected",
-        serverInfo
+        serverInfo,
+        guild_name: discordOAuth.approved_server_name
     });
     console.log("Server connected");
 });
+
+app.post("/mojangOAuth", async(req, res, next) => {
+    const response = await req.json();
+    if(!bufAccessTokens.some(data => data.access_token === req.headers.get("authorization"))){
+        returnError(res, error, {
+            "status": "error",
+            "type": "access_token_invalid",
+            "mes": error.toString()
+        })
+        next();
+        return;
+    }
+    const oauthType = {
+        id: () => {
+
+        }
+    }
+})
 
 app.post("/discordOAuth", async function (req, res, next) {
     console.log("discordOAuth");
