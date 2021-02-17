@@ -8,7 +8,7 @@ const serverInfo = config.serverInfo;
 const discordOAuth = config.discordOAuth;
 const DiscordOauth2 = require("discord-oauth2");
 const oauth = new DiscordOauth2();
-const port = process.env.PORT || 4649;
+//const port = process.env.PORT || 4649;
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const request = require("request");
@@ -94,7 +94,6 @@ const returnError = (res, error = false, errorDetail, errorStatus = 400) => {
 app.use(cors());
 app.options('*', cors());  // enable pre-flight
 
-exports.app = app;
 
 app.get("/serverStatus", async (req, res, next) => {
     res.json({
@@ -279,6 +278,9 @@ app.post("/discordOAuth", async function (req, res, next) {
         });
     }
 })
+
+module.exports = app;
+
 
 cron.schedule("0 0 * * *", () => {
     bufDb.dataBase = bufDb.dataBase.filter(data => moment(data.expired_at) > moment());

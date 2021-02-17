@@ -223,9 +223,8 @@ client.on('message', async (msg) => {
 
 client.login(cfg.token);
 
-require('./src/authServer');
 
-var app = require('./src/authServer.js').app;
+var app = require('./src/authServer.js');
 
 require('greenlock-express')
     .init({
