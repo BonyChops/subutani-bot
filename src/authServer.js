@@ -8,6 +8,7 @@ const serverInfo = config.serverInfo;
 const discordOAuth = config.discordOAuth;
 const DiscordOauth2 = require("discord-oauth2");
 const oauth = new DiscordOauth2();
+const https = require('https');
 const port = process.env.PORT || 4649;
 const bodyParser = require('body-parser');
 const cors = require('cors');
