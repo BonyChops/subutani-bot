@@ -54,7 +54,7 @@ global.whitelistUpdate = async() => {
 
 global.isServerOpen = async () => {
   const result = await execShellCommand('nc -zvw3 localhost ' + cfg.rcon.port);
-  return (result.indexOf("succeeded") !== -1)
+  return (result.indexOf("Connection refused") === -1)
 }
 
 const isServerBooting = async () => {
