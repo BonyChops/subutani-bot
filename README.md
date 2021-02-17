@@ -11,7 +11,20 @@ SUBUTANI BOT
     "rcon": {
         "host": "localhost",
         "port": "50000",
-        "password": "SEXY_SUBUTANI_OTOWARE_UNCHI"
-    }
+        "password": "rcon_password"
+    },
+    "serverInfo":{
+        "serverName": "servername",
+        "serverOwner": "your-name"
+    },
+    "discordOAuth": {
+        "clientId": "client_id",
+        "clientSecret": "client_secret",
+        "scope": "identify guilds",
+        "redirectUri": "https://auth.mc.nnct18j.com/redirect.html",
+        "approved_server": ["approved_discord_server_ids"],
+        "approved_server_name": "description_of_server"
+    },
+    "whitelistJsonPath": "path/to/whitelist.json"
 }
 ```

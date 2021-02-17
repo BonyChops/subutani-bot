@@ -5,8 +5,7 @@ const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 const cfg = JSON.parse(fs.readFileSync(__dirname + '/config.json'));
 const exec = require('child_process').exec;
 const Rcon = require('rcon');
-const rconClient = new Rcon(cfg.rcon.host, cfg.rcon.port, cfg.rcon.password);
-require('./src/authServer');
+global.rconClient = new Rcon(cfg.rcon.host, cfg.rcon.port, cfg.rcon.password);
 
 const sendCommand = (cmd) => {
   rconClient.send(cmd);
@@ -48,13 +47,18 @@ const execNormal = (cmd) => {
   })
 }
 
-const isServerOpen = async () => {
+global.whitelistUpdate = async() => {
+  return await rconClient.send("whitelist reload");
+
+}
+
+global.isServerOpen = async () => {
   const result = await execShellCommand('netstat -anltp|grep :' + cfg.rcon.port + ".*LISTEN");
   return (result.indexOf(":" + cfg.rcon.port) !== -1)
 }
 
 const isServerBooting = async () => {
-  const result = await execShellCommand('sudo screen -ls | grep mcserver');
+  const result = await execShellCommand('screen -ls | grep mcserver');
   return (result.indexOf("mcserver") !== -1)
 }
 
@@ -217,4 +221,6 @@ client.on('message', async (msg) => {
 
 });
 
-//client.login(cfg.token);
+client.login(cfg.token);
+
+require('./src/authServer');
