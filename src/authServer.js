@@ -87,6 +87,10 @@ const returnError = (res, error = false, errorDetail, errorStatus = 400) => {
     updateWhitelist();
 });
  */
+
+app.set('port', (process.env.PORT || 4649));
+
+
 app.use(cors());
 app.options('*', cors());  // enable pre-flight
 
