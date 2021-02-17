@@ -169,6 +169,10 @@ client.on('message', async (msg) => {
       {
         "name": "遊んでるメンバー",
         "value": `\`\`\`${member}\`\`\``
+      },
+      {
+        name: "サーバーに参加する",
+        value: `[参加](https://${config.oauthDomain}/?authServer=${config.host})`
       }
     ]
     const embed = embedAlert("SUBUTANI SEXY SERVER", "マイクラ鯖のステータスです", color, new Date(), url, fields);
