@@ -179,7 +179,7 @@ client.on('message', async (msg) => {
     msg.channel.send({ embed });
   }
   if (msg.content.indexOf(cfg.prefix + " mgr") !== -1) {
-    if (msg.guild.members.cache.find(member => member.id === msg.author.id).permissions.has("ADMINISTRATOR") || msg.guild.roles.cache.find(role => role.name == cfg.roleName).members.get(msg.author.id) !== undefined) {
+    if (msg.guild.members.cache.find(member => member.id === msg.author.id).permissions.has("ADMINISTRATOR") || (cfg.roleName !== false && msg.guild.roles.cache.find(role => role.name == cfg.roleName).members.get(msg.author.id) !== undefined)) {
       if (msg.content == cfg.prefix + "  mgr reboot") {
         if (await isServerOpen()) {
           msg.channel.send("```再起動しています...```");
