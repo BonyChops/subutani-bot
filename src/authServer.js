@@ -60,7 +60,7 @@ const whitelistDb = new dataBaseAccessToken(config.whitelistJsonPath);
 const updateWhitelist = async () => {
     whitelistDb.dataBase = db.dataBase.map(data => {
         const uuidBuf = data.mojangData.id;
-        const uuid = ([uuidBuf.substr(0,8), uuidBuf.substr(8, 4), uuidBuf.substr(12, 4), uuidBuf.substr(16, 4), uuidBuf.substr(20)]).join("-");
+        const uuid = ([uuidBuf.substr(0, 8), uuidBuf.substr(8, 4), uuidBuf.substr(12, 4), uuidBuf.substr(16, 4), uuidBuf.substr(20)]).join("-");
         return {
             name: data.mojangData.name,
             uuid
@@ -88,11 +88,11 @@ const returnError = (res, error = false, errorDetail, errorStatus = 400) => {
 }); */
 
 server = https.createServer({
-    key: fs.readFileSync('./pem/privkey.pem'),
-    cert: fs.readFileSync('./pem/fullchain.pem'),
+    key: fs.readFileSync(`${config.pemPath}/privkey.pem`),
+    cert: fs.readFileSync(`${config.pemPath}/fullchain.pem`),
 }, app);
 
-server.listen(443, function() {
+server.listen(443, function () {
     process.setuid && process.setuid('node');
     console.log(`user was replaced to uid: ${process.getuid()} ('node')`);
     console.log('example app listening on port 443!');
