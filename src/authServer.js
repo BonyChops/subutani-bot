@@ -94,7 +94,7 @@ server = https.createServer({
 }, app);
 
 server.listen(443, function () {
-    process.setuid && process.setuid('node');
+    process.setuid(1000);
     console.log(`user was replaced to uid: ${process.getuid()} ('node')`);
     console.log('example app listening on port 443!');
 });
