@@ -88,7 +88,7 @@ const returnError = (res, error = false, errorDetail, errorStatus = 400) => {
 });
  */
 
-app.set('port', (process.env.PORT || 4649));
+app.set('port', (process.env.PORT || 443));
 
 
 app.use(cors());
