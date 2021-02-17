@@ -90,6 +90,8 @@ app.listen(port, async () => {
 app.use(cors());
 app.options('*', cors());  // enable pre-flight
 
+exports.app = app;
+
 app.get("/serverStatus", async (req, res, next) => {
     res.json({
         status: "connected",

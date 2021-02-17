@@ -53,8 +53,8 @@ global.whitelistUpdate = async() => {
 }
 
 global.isServerOpen = async () => {
-  const result = await execShellCommand('netstat -anltp|grep :' + cfg.rcon.port + ".*LISTEN");
-  return (result.indexOf(":" + cfg.rcon.port) !== -1)
+  const result = await execShellCommand('nc -zvw3 localhost ' + cfg.rcon.port);
+  return (result.indexOf("succeeded") !== -1)
 }
 
 const isServerBooting = async () => {
@@ -138,11 +138,11 @@ client.on('ready', async () => {
 });
 
 client.on('message', async (msg) => {
-  if (msg.content === '!subutani') {
+  if (msg.content === cfg.prefix) {
     let status;
     let color;
     let member = "鯖はまだオフラインです";
-    const IP = await execShellCommand('curl inet-ip.info');
+    const IP = (cfg.host !== undefined) ? cfg.host + (cfg.mcPort === "25565" ? "" : ":" + cfg.mcPort) : await execShellCommand('curl inet-ip.info');
     if (await isServerOpen()) {
       status = await "OPEN"
       color = 65280
@@ -174,9 +174,9 @@ client.on('message', async (msg) => {
     const embed = embedAlert("SUBUTANI SEXY SERVER", "マイクラ鯖のステータスです", color, new Date(), url, fields);
     msg.channel.send({ embed });
   }
-  if (msg.content.indexOf("!subutani mgr") !== -1) {
-    if (msg.guild.roles.cache.find(role => role.name == cfg.roleName).members.get(msg.author.id) !== undefined) {
-      if (msg.content == "!subutani mgr reboot") {
+  if (msg.content.indexOf(cfg.prefix + " mgr") !== -1) {
+    if (msg.guild.members.cache.find(member => member.id === msg.author.id).permissions.has("ADMINISTRATOR") || msg.guild.roles.cache.find(role => role.name == cfg.roleName).members.get(msg.author.id) !== undefined) {
+      if (msg.content == cfg.prefix + "  mgr reboot") {
         if (await isServerOpen()) {
           msg.channel.send("```再起動しています...```");
           if (await !waitTilEnd()) {
@@ -189,7 +189,7 @@ client.on('message', async (msg) => {
           msg.channel.send("```エラー: まだオンラインではありません```");
         }
       }
-      if (msg.content == "!subutani mgr shutdown") {
+      if (msg.content == cfg.prefix + " mgr shutdown") {
         if (await isServerOpen()) {
           msg.channel.send("```鯖を終了しています...```");
           msg.channel.send(await waitTilEnd() ? "```終了しました```" : "```失敗しました```");
@@ -197,7 +197,7 @@ client.on('message', async (msg) => {
           msg.channel.send("```エラー: まだオンラインではありません```");
         }
       }
-      if (msg.content == "!subutani mgr shutdown -f") {
+      if (msg.content == cfg.prefix + " mgr shutdown -f") {
         if (isServerOpen()) {
           msg.channel.send("```強制シャットダウンを行います...```");
           await execShellCommand("sudo screen -X -S mcserver quit");
@@ -205,7 +205,7 @@ client.on('message', async (msg) => {
           msg.channel.send("```エラー: まだオンラインではありません```");
         }
       }
-      if (msg.content === '!subutani mgr boot') {
+      if (msg.content === cfg.prefix + ' mgr boot') {
         if ((await isServerOpen()) || (await isServerBooting())) {
           msg.channel.send("```エラー: すでに起動しています```");
         } else {
@@ -224,3 +224,22 @@ client.on('message', async (msg) => {
 client.login(cfg.token);
 
 require('./src/authServer');
+
+var app = require('./src/authServer.js').app;
+
+require('greenlock-express')
+    .init({
+        packageRoot: __dirname,
+
+        // contact for security and critical bug notices
+        maintainerEmail: "contact.bonychops@gmail.com",
+
+        // where to look for configuration
+        configDir: './greenlock.d',
+
+        // whether or not to run at cloudscale
+        cluster: false
+    })
+    // Serves on 80 and 443
+    // Get's SSL certificates magically!
+    .serve(app);
