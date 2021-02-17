@@ -79,14 +79,14 @@ const returnError = (res, error = false, errorDetail, errorStatus = 400) => {
     res.json(errorDetail);
 }
 
-app.listen(port, async () => {
+/* app.listen(port, async () => {
     console.log(`listening on ${port}`);
     console.log("UUID test:" + v4());
     bufDb.dataBase = bufDb.dataBase.filter(data => moment(data.expired_at) > moment());
     bufDb.writeData();
     updateWhitelist();
 });
-
+ */
 app.use(cors());
 app.options('*', cors());  // enable pre-flight
 
