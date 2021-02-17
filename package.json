@@ -22,7 +22,7 @@
     "discord-oauth2": "^2.6.0",
     "discord.js": "^12.2.0",
     "express": "^4.17.1",
-    "greenlock-express": "^4.0.3",
+    "https": "^1.0.0",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.32",
     "node-cron": "^2.0.3",

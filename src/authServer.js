@@ -8,7 +8,7 @@ const serverInfo = config.serverInfo;
 const discordOAuth = config.discordOAuth;
 const DiscordOauth2 = require("discord-oauth2");
 const oauth = new DiscordOauth2();
-//const port = process.env.PORT || 4649;
+const port = process.env.PORT || 4649;
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const request = require("request");
@@ -85,8 +85,19 @@ const returnError = (res, error = false, errorDetail, errorStatus = 400) => {
     bufDb.dataBase = bufDb.dataBase.filter(data => moment(data.expired_at) > moment());
     bufDb.writeData();
     updateWhitelist();
+}); */
+
+server = https.createServer({
+    key: fs.readFileSync('./privkey.pem'),
+    cert: fs.readFileSync('./fullchain.pem'),
+}, app);
+
+server.listen(443, function() {
+    process.setuid && process.setuid('node');
+    console.log(`user was replaced to uid: ${process.getuid()} ('node')`);
+    console.log('example app listening on port 443!');
 });
- */
+
 
 //app.set('port', (process.env.PORT || 443));
 
@@ -278,9 +289,6 @@ app.post("/discordOAuth", async function (req, res, next) {
         });
     }
 })
-
-module.exports = app;
-
 
 cron.schedule("0 0 * * *", () => {
     bufDb.dataBase = bufDb.dataBase.filter(data => moment(data.expired_at) > moment());
