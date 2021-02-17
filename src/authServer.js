@@ -29,7 +29,9 @@ class dataBaseAccessToken {
         if (fs.existsSync(dataPath)) {
             this.loadData();
         } else {
-            fs.writeFileSync(this.dataPath, JSON.stringify(this.dataBase, null, 2));
+            //fs.writeFileSync(this.dataPath, JSON.stringify(this.dataBase, null, 2));
+            console.error(dataPath + "does not exist! For safety, please create file your self...");
+            process.exit(1);
         }
     };
 
