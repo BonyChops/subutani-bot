@@ -88,8 +88,8 @@ const returnError = (res, error = false, errorDetail, errorStatus = 400) => {
 }); */
 
 server = https.createServer({
-    key: fs.readFileSync('./privkey.pem'),
-    cert: fs.readFileSync('./fullchain.pem'),
+    key: fs.readFileSync('./pem/privkey.pem'),
+    cert: fs.readFileSync('./pem/fullchain.pem'),
 }, app);
 
 server.listen(443, function() {
